@@ -51,6 +51,7 @@ La grafica è in ASCII art (CGA o superiore consigliata). L'interfaccia usa il c
 - `README.md` (questa pagina)
 - `BN_tech.txt` (documentazione tecnica e commenti riga-per-riga)
 -  Screenshot del gioco
+   ```
    BN2-01.png
    BN2-02.png
    BN2-03.png
@@ -69,4 +70,5 @@ La grafica è in ASCII art (CGA o superiore consigliata). L'interfaccia usa il c
    BN2TEST4.DAT (Risultati)
    BN2TEST5.BAS (Istogramma flotte compatte vs random)
    BN2TEST5.DAT (Risultati)
+   ```
 
