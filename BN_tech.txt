@@ -1,104 +1,88 @@
-Battaglia Navale 2.0 - Approfondimento tecnico
-============================================
+Battaglia Navale 2.0 — BN2CD.BAS
+Venezia, 1987 / 2025
 
-Questo documento raccoglie le parti più interessanti del codice BN2CD.BAS con esempi, formule e commenti.
+Questo documento raccoglie le note tecniche, le formule e le riflessioni nate durante lo sviluppo e il restauro del gioco. Ogni sezione è pensata per accompagnare il lettore nel cuore del codice, con umiltà e chiarezza.
 
-1. Gestione dinamica delle navi
--------------------------------
-Il numero e la lunghezza delle navi dipendono dalla dimensione della griglia:
+───────────────────────────────────────────────
+1. Flotta dinamica e griglia variabile
+───────────────────────────────────────────────
 
-```
-FOR i = 1 TO Lunghezza
-    Navi(i).Lunghezza = 1 + Lunghezza - i
-    Navi(i).Quante = CINT(i * XY! / 10 - 1 / XY!)
-NEXT
-```
+La dimensione della griglia (XY) determina la composizione della flotta. Il gioco adatta il numero e la lunghezza delle navi in modo proporzionale.
+
+Formula:
+  Lunghezza = INT(XY / 5) - 1
+  LunghezzaNave(i) = 1 + Lunghezza - i
+  QuantitàNavi(i) = CINT(i * XY / 10 - 1 / XY)
 
 Esempi:
-- Griglia 8x8 → meno navi, partite veloci.
-- Griglia 10x10 → bilanciamento classico.
-- Griglia 20x20 → molte navi, partite lunghe.
+  XY = 10 → 4 classi, 10 navi totali
+  XY = 20 → 5 classi, 30 navi totali
 
-Tabella riassuntiva (estratta dai test):
-```
-Griglia   | Lunghezza max nave | Numero totale navi
-----------+--------------------+-------------------
-  8x8     | 3                  | ~10
-  9x9     | 4                  | ~12
- 10x10    | 4                  | ~15
- 20x20    | 5                  | ~40
-```
+Questa dinamica garantisce varietà e bilanciamento, evitando griglie troppo vuote o troppo affollate.
 
-2. IA e colpi inseguiti
------------------------
-La CPU non spara a caso: memorizza i colpi a segno in un array `ColpiInseguiti()` e tenta di dedurre l'orientamento della nave:
+───────────────────────────────────────────────
+2. Intelligenza artificiale
+───────────────────────────────────────────────
 
-```
-DIM SHARED ColpiInseguiti(1 TO 10)
-DIM SHARED NumColpiInseguiti
-```
+L’IA memorizza i colpi a segno e li insegue con logica deduttiva.
 
-Ogni volta che colpisce, aggiunge la coppia (x,y) e usa `DeduciOrientamentoNave()` per continuare a inseguire.
+Routine principali:
+- ColpiInseguiti(): memorizza coordinate dei colpi utili.
+- DeduciOrientamentoNave(): analizza la sequenza per capire se la nave è orizzontale o verticale.
+- MarcaContornoNave(): dopo l’affondamento, marca il contorno per evitare colpi inutili.
 
-3. Marcatura del contorno
--------------------------
-Quando una nave viene affondata, la SUB `MarcaContornoNave()` segna le caselle intorno come già esplorate, impedendo sprechi di colpi.
+Queste routine permettono all’IA di comportarsi in modo credibile e strategico, simulando una memoria tattica.
 
-```
-SUB MarcaContornoNave (x, y, Flag)
-    ' Disegna bordo attorno alla nave affondata
-END SUB
-```
+───────────────────────────────────────────────
+3. Punteggio e classifica Top Ten
+───────────────────────────────────────────────
 
-4. Formula del punteggio
--------------------------
-Il punteggio combina:
-- tempo impiegato (`Secondi!`)
-- colpi sprecati (`ColpiSprecati`)
-- grandezza della griglia
+Il punteggio premia:
+- Rapidità (Secondi!)
+- Efficienza (ColpiSprecati)
+- Complessità della griglia
 
-La logica premia rapidità ed efficienza, mantenendo competitivo il ranking.
+Formula:
+  Punteggio = INT(10000 / (Secondi! + ColpiSprecati + XY))
 
-5. Controllo velocità CPU
--------------------------
-La SUB `TestPC` legge la BIOS Data Area e usa un contatore per calibrare le pause. 
-In questo modo il gioco resta giocabile anche su macchine molto veloci o molto lente.
+La classifica è salvata in `BN2TOP.DAT`, con nome, punteggio e data. Il gioco propone l’inserimento automatico se il punteggio è tra i primi 10.
 
-6. Prove cronometrate
----------------------
-Durante lo sviluppo, sono stati eseguiti test su XT, AT e 386.
-Risultati:
-- XT →
-- AT/386+ →
+───────────────────────────────────────────────
+4. Compatibilità e input
+───────────────────────────────────────────────
 
-7. Commenti riga-per-riga (estratti)
-------------------------------------
+- Richiede QuickBASIC / QBX / VBDOS / DOSBox
+- Tastiera con frecce (INKEY$)
+- CGA o superiore per visualizzazione corretta
 
-### SUB PiazzaNave
-```
-SUB PiazzaNave (Flag)
-    ' Se Flag=1 → piazza le navi del PC
-    ' Se Flag=0 → piazza le navi del Player (con input cursore)
-END SUB
-```
+Il cursore è controllato da frecce, con feedback visivo. Il piazzamento è assistito da controlli di ingombro e sovrapposizione.
 
-### SUB FaseAttaccoPC
-```
-SUB FaseAttaccoPC ()
-    ' Logica di tiro:
-    ' - Se ci sono colpi da inseguire → continua in quella direzione
-    ' - Altrimenti sceglie coordinate casuali
-END SUB
-```
+───────────────────────────────────────────────
+5. Test automatici e benchmark
+───────────────────────────────────────────────
 
-### SUB Classifica
-```
-SUB Classifica (Punteggio)
-    ' Gestisce la top ten con inserimento ordinato
-    ' Scrive a video con cornice rossa e nomi allineati
-END SUB
-```
+Cinque test (`BN2TEST1-5.BAS`) verificano:
+- Piazzamento rapido
+- Calcolo ingombri
+- Collaudo punteggi
+- Piazzamenti compatti
+- Istogramma flotte
 
-Conclusione
------------
-La combinazione di griglie dinamiche, IA di inseguimento, gestione punteggi e stabilità su hardware molto diversi rende "Battaglia Navale 2.0" un esempio notevole di programmazione in QuickBASIC degli anni ’80.
+Ogni test produce un file `.DAT` con output leggibile. Gli screenshot (`BN2-01.png` → `BN2-05.png`) mostrano i risultati visivi.
+
+───────────────────────────────────────────────
+6. Commenti emblematici nel codice
+───────────────────────────────────────────────
+
+- `SUB MarcaContornoNave`: evita colpi inutili, simula buon senso.
+- `IF ColpiInseguiti > 0 THEN GOSUB DeduciOrientamentoNave`: IA con memoria.
+- `FOR i = 1 TO Lunghezza`: flotta proporzionale.
+- `PRINT "Hai affondato una nave da"; LunghezzaNave(i); "celle!"`: feedback narrativo.
+
+───────────────────────────────────────────────
+7. Riflessioni finali
+───────────────────────────────────────────────
+
+Questo gioco è parte di un archivio vivente. Ogni test è una poesia algoritmica, ogni formula una riflessione sul tempo e sull’efficienza. Il restauro ha cercato di rispettare lo spirito originale, aggiungendo chiarezza e documentazione.
+
+Grazie per aver navigato con me.
