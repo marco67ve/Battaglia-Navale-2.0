@@ -1,10 +1,7 @@
-# Battaglia-Navale-2.0
-Battaglia Navale 2.0 è un gioco in BASIC (file `BN2CD.BAS`) scritto in QuickBASIC.
-
 # Battaglia Navale 2.0 (BN2CD) — Marco da Venezia, 1987
 
-**Descrizione sommaria**
-La grafica è in ASCII art (CGA o superiore consigliata). L'interfaccia usa il cursore gestito con i tasti freccia per piazzare le navi e per sparare.
+**Descrizione sommaria**  
+Battaglia Navale 2.0 è un gioco in BASIC (file `BN2CD.BAS`) scritto in QuickBASIC. La grafica è in ASCII art (CGA o superiore consigliata). L'interfaccia usa il cursore gestito con i tasti freccia per piazzare le navi e per sparare.
 
 ## Caratteristiche principali
 - Grafica testuale (ASCII art). Richiede CGA o superiore per un'aspetto ottimale.
@@ -58,6 +55,7 @@ La grafica è in ASCII art (CGA o superiore consigliata). L'interfaccia usa il c
    BN2-04.png
    BN2-05.png
 -  Test
+   ```
    BN2TEST1.BAS (Test crono piazzamento navi)
    BN2TEST1.DAT (Risultati)
    BN2TEST1.png (Screenshot)
@@ -70,5 +68,4 @@ La grafica è in ASCII art (CGA o superiore consigliata). L'interfaccia usa il c
    BN2TEST4.DAT (Risultati)
    BN2TEST5.BAS (Istogramma flotte compatte vs random)
    BN2TEST5.DAT (Risultati)
-   ```
 
