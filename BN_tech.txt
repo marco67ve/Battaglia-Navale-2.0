@@ -1,0 +1,104 @@
+Battaglia Navale 2.0 - Approfondimento tecnico
+============================================
+
+Questo documento raccoglie le parti più interessanti del codice BN2CD.BAS con esempi, formule e commenti.
+
+1. Gestione dinamica delle navi
+-------------------------------
+Il numero e la lunghezza delle navi dipendono dalla dimensione della griglia:
+
+```
+FOR i = 1 TO Lunghezza
+    Navi(i).Lunghezza = 1 + Lunghezza - i
+    Navi(i).Quante = CINT(i * XY! / 10 - 1 / XY!)
+NEXT
+```
+
+Esempi:
+- Griglia 8x8 → meno navi, partite veloci.
+- Griglia 10x10 → bilanciamento classico.
+- Griglia 20x20 → molte navi, partite lunghe.
+
+Tabella riassuntiva (estratta dai test):
+```
+Griglia   | Lunghezza max nave | Numero totale navi
+----------+--------------------+-------------------
+  8x8     | 3                  | ~10
+  9x9     | 4                  | ~12
+ 10x10    | 4                  | ~15
+ 20x20    | 5                  | ~40
+```
+
+2. IA e colpi inseguiti
+-----------------------
+La CPU non spara a caso: memorizza i colpi a segno in un array `ColpiInseguiti()` e tenta di dedurre l'orientamento della nave:
+
+```
+DIM SHARED ColpiInseguiti(1 TO 10)
+DIM SHARED NumColpiInseguiti
+```
+
+Ogni volta che colpisce, aggiunge la coppia (x,y) e usa `DeduciOrientamentoNave()` per continuare a inseguire.
+
+3. Marcatura del contorno
+-------------------------
+Quando una nave viene affondata, la SUB `MarcaContornoNave()` segna le caselle intorno come già esplorate, impedendo sprechi di colpi.
+
+```
+SUB MarcaContornoNave (x, y, Flag)
+    ' Disegna bordo attorno alla nave affondata
+END SUB
+```
+
+4. Formula del punteggio
+-------------------------
+Il punteggio combina:
+- tempo impiegato (`Secondi!`)
+- colpi sprecati (`ColpiSprecati`)
+- grandezza della griglia
+
+La logica premia rapidità ed efficienza, mantenendo competitivo il ranking.
+
+5. Controllo velocità CPU
+-------------------------
+La SUB `TestPC` legge la BIOS Data Area e usa un contatore per calibrare le pause. 
+In questo modo il gioco resta giocabile anche su macchine molto veloci o molto lente.
+
+6. Prove cronometrate
+---------------------
+Durante lo sviluppo, sono stati eseguiti test su XT, AT e 386.
+Risultati:
+- XT →
+- AT/386+ →
+
+7. Commenti riga-per-riga (estratti)
+------------------------------------
+
+### SUB PiazzaNave
+```
+SUB PiazzaNave (Flag)
+    ' Se Flag=1 → piazza le navi del PC
+    ' Se Flag=0 → piazza le navi del Player (con input cursore)
+END SUB
+```
+
+### SUB FaseAttaccoPC
+```
+SUB FaseAttaccoPC ()
+    ' Logica di tiro:
+    ' - Se ci sono colpi da inseguire → continua in quella direzione
+    ' - Altrimenti sceglie coordinate casuali
+END SUB
+```
+
+### SUB Classifica
+```
+SUB Classifica (Punteggio)
+    ' Gestisce la top ten con inserimento ordinato
+    ' Scrive a video con cornice rossa e nomi allineati
+END SUB
+```
+
+Conclusione
+-----------
+La combinazione di griglie dinamiche, IA di inseguimento, gestione punteggi e stabilità su hardware molto diversi rende "Battaglia Navale 2.0" un esempio notevole di programmazione in QuickBASIC degli anni ’80.
