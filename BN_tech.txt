@@ -75,7 +75,7 @@ Ogni test produce un file `.DAT` con output leggibile. Gli screenshot (`BN2-01.p
 ───────────────────────────────────────────────
 
 - `SUB MarcaContornoNave`: evita colpi inutili, simula buon senso.
-- `IF ColpiInseguiti > 0 THEN GOSUB DeduciOrientamentoNave`: IA con memoria.
+- `IF ColpiInseguiti > 0 THEN DeduciOrientamentoNave`: IA con memoria.
 - `FOR i = 1 TO Lunghezza`: flotta proporzionale.
 - `PRINT "Hai affondato una nave da"; LunghezzaNave(i); "celle!"`: feedback narrativo.
 
